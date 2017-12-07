@@ -1,1 +1,1 @@
-from . import cmd, gocode
+import cmd, gocode
