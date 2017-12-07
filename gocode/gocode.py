@@ -9,7 +9,7 @@ def autocomplete(position, source):
     )
     ret = json.loads(out)
     return ret
-
+    
 def parse_func(src):
     """
     parse_func is used to parse a Go function into (name, type) tuples that are easier to use for autocompletion.
@@ -51,6 +51,12 @@ def parse_func(src):
     if not src.startswith("func("):
         raise Error("invalid function source: %s" % src)
     
+    params, retvals = split_func_def(src)
+    return (parse_params(params), parse_params(retvals))
+
+def split_func_def(src):
+    if not src.startswith("func("):
+        raise Error("invalid function source: %s" % src)
     start = len("func")
     depth = 0
     for i in range(start, len(src)):
@@ -59,9 +65,8 @@ def parse_func(src):
         elif src[i] == ")":
             depth -= 1
         if depth == 0:
-            return (parse_params(src[start:i+1]), parse_params(src[i+1:].strip()))
+            return (src[start:i+1], src[i+1:].strip())
     raise Error("invalid function source: %s" % src)
-
 
 def parse_params(src):
     """
